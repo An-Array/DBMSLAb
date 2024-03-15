@@ -1,7 +1,6 @@
 Create table Students (Reg_no varchar NOT NULL, Name varchar, Age int, DOB date, PRIMARY KEY (Reg_no));
 
-INSERT INTO Students (Reg_no, Name, Age, DOB)
-VALUES ('S001', 'John Smith', 20, '2003-05-10'), ('S002', 'Emily Johnson', 21, '2002-09-15'), ('S003', 'Michael Brown', 19, '2004-02-28'), ('S004', 'Sarah Davis', 22, '2000-07-20'), ('S005', 'James Wilson', 20, '2002-04-12'), ('S006', 'Emma Martinez', 21, '2001-11-28');
+INSERT INTO Students (Reg_no, Name, Age, DOB) VALUES ('S001', 'John Smith', 20, '2003-May-10'), ('S002', 'Emily Johnson', 21, '2002-Sep-15'), ('S003', 'Michael Brown', 19, '2004-Feb-28'), ('S004', 'Sarah Davis', 22, '2000-Jul-20'), ('S005', 'James Wilson', 20, '2002-Apr-12'), ('S006', 'Emma Martinez', 21, '2001-Nov-28');
     
 -- Create the Grades table with the desired structure
 CREATE TABLE Grades (Reg_no VARCHAR(10) NOT NULL, Subject VARCHAR(50) NOT NULL, Marks INT, PRIMARY KEY (Reg_no, Subject), FOREIGN KEY(Reg_no) REFERENCES Students(Reg_no));
