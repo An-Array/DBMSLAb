@@ -1,0 +1,99 @@
+
+CREATE TABLE Players (
+    player_id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    age INT,
+    team_id INT REFERENCES Teams(team_id)
+);
+
+CREATE TABLE Teams (
+    team_id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    sport VARCHAR(100)
+);
+
+CREATE TABLE Matches (
+    match_id SERIAL PRIMARY KEY,
+    team1_id INT REFERENCES Teams(team_id),
+    team2_id INT REFERENCES Teams(team_id),
+    date DATE,
+    venue VARCHAR(100)
+);
+
+
+INSERT INTO Teams (team_id, name, sport) VALUES
+(1, 'Team A', 'Basketball'),
+(2, 'Team B', 'Soccer');
+
+INSERT INTO Players (player_id, name, age, team_id) VALUES
+(1, 'John Doe', 25, 1),
+(2, 'Jane Smith', 27, 2),
+(3, 'Alex Lee', 23, 1),
+(4, 'Emily Chen', 29, 2);
+
+INSERT INTO Matches (match_id, team1_id, team2_id, date, venue) VALUES
+(1, 1, 2, '2024-MAR-28', 'Stadium X'),
+(2, 2, 1, '2024-APR-05', 'Arena Y');
+
+
+-- List all players with their team names and sports they play
+SELECT Players.name, Teams.name AS team_name, Teams.sport
+FROM Players
+INNER JOIN Teams ON Players.team_id = Teams.team_id;
+
+-- List all matches with their teams and venue details
+SELECT Matches.date, Teams1.name AS team1_name, Teams2.name AS team2_name, Matches.venue
+FROM Matches
+INNER JOIN Teams AS Teams1 ON Matches.team1_id = Teams1.team_id
+INNER JOIN Teams AS Teams2 ON Matches.team2_id = Teams2.team_id;
+
+-- List all players along with their team names and match dates
+SELECT Players.name, Teams.name AS team_name, Matches.date
+FROM Players
+INNER JOIN Teams ON Players.team_id = Teams.team_id
+INNER JOIN Matches ON Players.team_id = Matches.team1_id OR Players.team_id = Matches.team2_id;
+
+-- List all matches where Team A participated
+SELECT Matches.date, Teams1.name AS team1_name, Teams2.name AS team2_name
+FROM Matches
+INNER JOIN Teams AS Teams1 ON Matches.team1_id = Teams1.team_id
+INNER JOIN Teams AS Teams2 ON Matches.team2_id = Teams2.team_id
+WHERE Teams1.name = 'Team A' OR Teams2.name = 'Team A';
+
+-- Count the number of players in each team
+SELECT Teams.name AS team_name, COUNT(Players.player_id) AS num_players
+FROM Teams
+LEFT JOIN Players ON Teams.team_id = Players.team_id
+GROUP BY Teams.name;
+
+-- List all players aged 25 or younger along with their team names
+SELECT Players.name, Teams.name AS team_name
+FROM Players
+INNER JOIN Teams ON Players.team_id = Teams.team_id
+WHERE Players.age <= 25;
+
+-- List all matches scheduled after March 30, 2024
+SELECT Matches.date, Teams1.name AS team1_name, Teams2.name AS team2_name
+FROM Matches
+INNER JOIN Teams AS Teams1 ON Matches.team1_id = Teams1.team_id
+INNER JOIN Teams AS Teams2 ON Matches.team2_id = Teams2.team_id
+WHERE Matches.date > '2024-03-30';
+
+-- List all players along with the number of matches they've participated in
+SELECT Players.name, COUNT(Matches.match_id) AS num_matches
+FROM Players
+LEFT JOIN Matches ON Players.team_id = Matches.team1_id OR Players.team_id = Matches.team2_id
+GROUP BY Players.name;
+
+-- List all players who haven't participated in any match
+SELECT Players.name
+FROM Players
+LEFT JOIN Matches ON Players.team_id = Matches.team1_id OR Players.team_id = Matches.team2_id
+WHERE Matches.match_id IS NULL;
+
+-- List all teams with their average player age
+SELECT Teams.name AS team_name, AVG(Players.age) AS avg_age
+FROM Teams
+LEFT JOIN Players ON Teams.team_id = Players.team_id
+GROUP BY Teams.name;
+
