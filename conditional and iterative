@@ -1,0 +1,93 @@
+
+CREATE TABLE teams (
+    team_id NUMBER PRIMARY KEY,
+    team_name VARCHAR2(100)
+);
+
+
+CREATE TABLE players (
+    player_id NUMBER PRIMARY KEY,
+    player_name VARCHAR2(100),
+    team_id NUMBER,
+    matches_played NUMBER,
+    salary NUMBER,
+    last_activity_date DATE
+);
+
+
+CREATE TABLE matches (
+    match_id NUMBER PRIMARY KEY,
+    player_id NUMBER,
+    points_scored NUMBER
+);
+
+
+INSERT INTO teams (team_id, team_name)
+VALUES (1, 'Team A'),
+       (2, 'Team B');
+
+INSERT INTO players (player_id, player_name, team_id, matches_played, salary, last_activity_date)
+VALUES (1001, 'Player 1', 1, 15, 5000, '2023-01-01'),
+       (1002, 'Player 2', 1, 5, 4500, '2023-02-01'),
+       (1003, 'Player 3', 2, 20, 6000, '2022-12-01');
+
+INSERT INTO matches (match_id, player_id, points_scored)
+VALUES (1, 1001, 20),
+       (2, 1002, 15),
+       (3, 1003, 25);
+
+-- List all player names
+DECLARE
+    v_player_name players.player_name%TYPE;
+BEGIN
+    FOR player_rec IN (SELECT player_name FROM players) LOOP
+        v_player_name := player_rec.player_name;
+        DBMS_OUTPUT.PUT_LINE(v_player_name);
+    END LOOP;
+END;
+
+-- Calculate total points scored by each player
+DECLARE
+    v_player_id players.player_id%TYPE;
+    v_total_points NUMBER;
+BEGIN
+    FOR player_rec IN (SELECT DISTINCT player_id FROM matches) LOOP
+        v_player_id := player_rec.player_id;
+        SELECT SUM(points_scored) INTO v_total_points
+        FROM matches
+        WHERE player_id = v_player_id;
+        DBMS_OUTPUT.PUT_LINE('Player ' || v_player_id || ' total points: ' || v_total_points);
+    END LOOP;
+END;
+-- List all team names
+DECLARE
+    v_team_name teams.team_name%TYPE;
+BEGIN
+    FOR team_rec IN (SELECT team_name FROM teams) LOOP
+        v_team_name := team_rec.team_name;
+        DBMS_OUTPUT.PUT_LINE(v_team_name);
+    END LOOP;
+END;
+-- List all matches and the corresponding points scored
+DECLARE
+    v_match_id matches.match_id%TYPE;
+    v_points_scored matches.points_scored%TYPE;
+BEGIN
+    FOR match_rec IN (SELECT match_id, points_scored FROM matches) LOOP
+        v_match_id := match_rec.match_id;
+        v_points_scored := match_rec.points_scored;
+        DBMS_OUTPUT.PUT_LINE('Match ID: ' || v_match_id || ', Points Scored: ' || v_points_scored);
+    END LOOP;
+END;
+-- List all players with their corresponding salaries
+DECLARE
+    v_player_name players.player_name%TYPE;
+    v_salary players.salary%TYPE;
+BEGIN
+    FOR player_rec IN (SELECT player_name, salary FROM players) LOOP
+        v_player_name := player_rec.player_name;
+        v_salary := player_rec.salary;
+        DBMS_OUTPUT.PUT_LINE('Player: ' || v_player_name || ', Salary: ' || v_salary);
+    END LOOP;
+END;
+
